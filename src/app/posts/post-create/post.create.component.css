@@ -1,0 +1,33 @@
+mat-card {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  mat-form-field {
+    width: 100%;
+  }
+  
+  button {
+    width: 100px;
+    align-self: flex-end;
+  }
+  
+  mat-error {
+    font-size: 12px;
+    color: red;
+  }
+  
+  .spinner {
+    display: block;
+    margin: auto;
+  }

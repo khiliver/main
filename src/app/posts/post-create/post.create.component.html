@@ -1,0 +1,28 @@
+<mat-spinner *ngIf="isLoading" class="spinner"></mat-spinner> <!-- ✅ Show spinner when saving -->
+<mat-card>
+    <form (ngSubmit)="onAddPost(form)" #form="ngForm">
+        <mat-form-field appearance="outline">
+          <mat-label>Title</mat-label>
+          <input 
+            matInput 
+            type="text" 
+            name="title" 
+            [(ngModel)]="enteredTitle" 
+            required>
+        </mat-form-field>
+      
+        <mat-form-field appearance="outline">
+          <mat-label>Content</mat-label>
+          <textarea 
+            matInput 
+            name="content" 
+            [(ngModel)]="enteredContent" 
+            required>
+          </textarea>
+        </mat-form-field>
+      
+        <button mat-raised-button color="primary" type="submit">
+          {{ mode === 'edit' ? 'Update Post' : 'Create Post' }}
+        </button>
+      </form>           
+</mat-card>
