@@ -59,6 +59,9 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "new-app2:build"
+          },
           "configurations": {
             "production": {
               "browserTarget": "new-app2:build:production"

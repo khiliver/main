@@ -1,83 +1,100 @@
 import { Component, OnInit } from "@angular/core";
-import { NgForm } from "@angular/forms";
+import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { PostsService } from "../posts.service";
 import { ActivatedRoute, ParamMap } from "@angular/router";
 import { Post } from "../post.model";
-import { Router } from "@angular/router";  // ✅ Import Router
+import { Router } from "@angular/router";
+import { mimetype } from "./mime-type.validator";  // ✅ Import the validator
 
 @Component({
-  selector: 'post-create',
-  templateUrl: './post.create.component.html',
-  styleUrls: ['./post.create.component.css'],
+  selector: "app-post-create",
+  templateUrl: "./post.create.component.html",
+  styleUrls: ["./post.create.component.css"],
 })
 export class PostCreateComponent implements OnInit {
-  enteredTitle = '';
-  enteredContent = '';
-  public mode = 'create';
-  private postId: string | null = null;
-  public post: Post = { id: '', title: '', content: '' };
+  form!: FormGroup;
+  mode: "create" | "edit" = "create";
+  postId: string | null = null;
+  post!: Post;
   isLoading = false;
+  imagePreview: string | ArrayBuffer | null = null;
 
   constructor(
-    public postsService: PostsService, 
-    public route: ActivatedRoute,
-    private router: Router  // ✅ Inject Router
+    private postsService: PostsService,
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      if (paramMap.has('postId')) {
-        this.mode = 'edit';
-        this.postId = paramMap.get('postId');
+    this.form = new FormGroup({
+      title: new FormControl(null, { validators: [Validators.required] }), 
+      content: new FormControl(null, {  validators: [Validators.required, Validators.minLength(3)] }),
+      image: new FormControl(null, { validators: [Validators.required] }) // 🛑 Ensure the image is required
+  });
 
+    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      if (paramMap.has("postId")) {
+        this.mode = "edit";
+        this.postId = paramMap.get("postId")!;
         this.isLoading = true;
 
-        this.postsService.getPost(this.postId!).subscribe(postData => {
+        this.postsService.getPost(this.postId).subscribe((postData) => {
           this.post = {
-            id: postData._id,
+            id: postData.id,
             title: postData.title,
-            content: postData.content
+            content: postData.content,
+            imagePath: postData.imagePath,
           };
 
-          this.enteredTitle = postData.title;
-          this.enteredContent = postData.content;
+          this.form.setValue({
+            title: this.post.title,
+            content: this.post.content,
+            image: this.post.imagePath,
+          });
 
-          setTimeout(() => {
-            this.isLoading = false;
-          }, 1000);
+          this.imagePreview = this.post.imagePath;
+          this.isLoading = false;
         });
       } else {
-        this.mode = 'create';
+        this.mode = "create";
         this.postId = null;
       }
     });
   }
 
-  onAddPost(form: NgForm) {
-    if (form.invalid) {
-      return;
-    }
+  onImagePicked(event: Event) {
+    const file = (event.target as HTMLInputElement).files![0];
+    if (!file) return;
 
-    this.isLoading = true; // ✅ Show spinner when saving
+    this.form.patchValue({ image: file });
+    this.form.get("image")!.updateValueAndValidity();
 
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imagePreview = reader.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onSavePost() {
+    if (this.form.invalid) return;
+
+    this.isLoading = true;
     if (this.mode === "create") {
-      this.postsService.addPost(form.value.title, form.value.content)
-        .subscribe(() => {
-          setTimeout(() => {
-            this.isLoading = false;
-            this.router.navigate(["/"]); // ✅ Navigate to post list
-          }, 1000);
-        });
+      this.postsService.addPost(
+        this.form.value.title,
+        this.form.value.content,
+        this.form.value.image
+      );
     } else {
-      this.postsService.updatePost(this.postId!, form.value.title, form.value.content)
-        .subscribe(() => {
-          setTimeout(() => {
-            this.isLoading = false;
-            this.router.navigate(["/"]); // ✅ Navigate to post list
-          }, 1000);
-        });
+      this.postsService.updatePost(
+        this.postId!,
+        this.form.value.title,
+        this.form.value.content,
+        this.form.value.image
+      );
     }
 
-    form.resetForm();
+    this.form.reset();
   }
 }

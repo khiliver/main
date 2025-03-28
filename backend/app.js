@@ -6,6 +6,9 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
 const Post = require('./models/post');
 const postroutes = require('./routes/posts');  
+const cors = require('cors');
+app.use(cors());
+
 
 mongoose.connect("mongodb+srv://Caelius:Leenardistooweak06@cluster0.hogce.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 

@@ -1,28 +1,35 @@
 <mat-spinner *ngIf="isLoading" class="spinner"></mat-spinner> <!-- ✅ Show spinner when saving -->
-<mat-card>
-    <form (ngSubmit)="onAddPost(form)" #form="ngForm">
-        <mat-form-field appearance="outline">
-          <mat-label>Title</mat-label>
-          <input 
-            matInput 
-            type="text" 
-            name="title" 
-            [(ngModel)]="enteredTitle" 
-            required>
-        </mat-form-field>
-      
-        <mat-form-field appearance="outline">
-          <mat-label>Content</mat-label>
-          <textarea 
-            matInput 
-            name="content" 
-            [(ngModel)]="enteredContent" 
-            required>
-          </textarea>
-        </mat-form-field>
-      
-        <button mat-raised-button color="primary" type="submit">
-          {{ mode === 'edit' ? 'Update Post' : 'Create Post' }}
-        </button>
-      </form>           
-</mat-card>
+
+<form [formGroup]="form" (ngSubmit)="onSavePost()" *ngIf="!isLoading">
+  <!-- Title Field -->
+  <mat-form-field appearance="outline">
+    <mat-label>Title</mat-label>
+    <input matInput type="text" formControlName="title" placeholder="Enter Title Here">
+    <mat-error *ngIf="form.get('title')?.invalid">This field is required</mat-error>
+  </mat-form-field>
+
+  <!-- Content Field -->
+  <mat-form-field appearance="outline">
+    <mat-label>Content</mat-label>
+    <textarea matInput rows="6" formControlName="content" placeholder="Enter Content Here"></textarea>
+    <mat-error *ngIf="form.get('content')?.invalid">This field is required</mat-error>
+  </mat-form-field>
+
+  <!-- Image Upload -->
+  <div class="image-upload">
+    <button mat-stroked-button type="button" (click)="filepicker.click()">
+      Pick Image
+    </button>
+    <input type="file" #filepicker (change)="onImagePicked($event)">
+  </div>
+
+  <!-- Image Preview -->
+  <div class="image-preview" *ngIf="imagePreview">
+    <img [src]="imagePreview" alt="Preview Image">
+  </div>
+
+  <!-- Submit Button -->
+  <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+    {{ mode === 'edit' ? 'Update Post' : 'Create Post' }}
+  </button>
+</form>
