@@ -11,21 +11,11 @@ interface Post {
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-
 export class AppComponent {
-  title = 'my-app';
+  title = 'Asejo';
+  // storedPosts: Post[] = [];
+  // onPostAdded(post: any): void {
+  //   this.storedPosts.push(post);
 
-  isLoading = true;
-
-  constructor() {
-    // Simulate loading delay
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 3000); // Spinner disappears after 3 seconds
-  }
-
- // storedPosts: Post[] = [];
- // onPostAdded(post: any): void{
- //   this.storedPosts.push(post);
- // }
+  //   }  
 }

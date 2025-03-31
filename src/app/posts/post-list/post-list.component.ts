@@ -1,44 +1,48 @@
-import { Input, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
+import { PageEvent } from '@angular/material/paginator'; 
 
 @Component({
-  selector: 'post-list',
+  selector: 'app-post-list',
   templateUrl: './post-list.component.html',
   styleUrls: ['./post-list.component.css']
 })
+
 export class PostListComponent implements OnInit, OnDestroy {
-  posts: Post[] = [];
-  private postsSub!: Subscription;
-  isLoading = true; // Initially set to true
+    totalposts = 10;  
+    postperpage = 2;  
+    pageSizeOption = [1, 2, 5, 10];  
+    posts: Post[] = [];
+    private postsSub!: Subscription;
+    Loading: boolean =false;
+    constructor(public postsService: PostsService){
+    }
+    
+    ngOnInit() {
+        this.Loading = true;
+        this.postsService.getPosts(this.postperpage, 1);  
+        this.postsSub = this.postsService.getPostUpdatedListener()
+        .subscribe((postData: { posts: Post[], totalPosts: number }) => {
+            this.Loading = false;
+            this.posts = postData.posts;
+            this.totalposts = postData.totalPosts; // Store total post count
+        });
+    }    
 
-  constructor(public postsService: PostsService) {}
-
-  ngOnInit() {
-    this.isLoading = true; // Start loading before fetching data
-    this.postsService.getPosts();
-
-    this.postsSub = this.postsService.getPostUpdatedListener().subscribe((posts: Post[]) => {
-      setTimeout(() => {
-        this.posts = posts;
-        this.isLoading = false; // Stop loading after delay
-      }, 1000); // Ensuring spinner is visible for at least 1 second
-    });
-  }
-
-  onDelete(postId: string) {
-    this.isLoading = true; // Show spinner while deleting
-  
-    this.postsService.deletePost(postId).subscribe(() => { // ✅ Wait for delete response
-      setTimeout(() => {
-        this.postsService.getPosts(); // ✅ Refresh posts list after deletion
-        this.isLoading = false; // ✅ Stop spinner
-      }, 1000); // Small delay to show spinner
-    });
-  }
-
-  ngOnDestroy() {
-    this.postsSub.unsubscribe();
-  }
+    onChangedPage(pageData: PageEvent){  
+        this.Loading = true;
+        const newPage = pageData.pageIndex + 1; // Convert 0-based index to 1-based
+        this.postperpage = pageData.pageSize;
+        this.postsService.getPosts(this.postperpage, newPage);
+        console.log(pageData);  
+    }  
+    
+    onDelete(postId: string) {
+        this.postsService.deletePost(postId);
+    }
+    ngOnDestroy() {
+        this.postsSub.unsubscribe();
+    }
 }

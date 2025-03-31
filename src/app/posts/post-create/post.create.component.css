@@ -1,84 +1,41 @@
-/* 🔹 Card Styling */
 mat-card {
-  max-width: 500px;
-  margin: 20px auto;
-  padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
-  background: linear-gradient(135deg, #ffffff, #f9f9f9);
+  margin: 1rem auto;
+  width: 80%;
+  max-width: 800px;
 }
 
-/* 🔹 Form Layout */
+mat-form-field {
+  display: block;
+  width: 100%;
+  margin: 1rem 0;
+}
+
 form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  align-items: center;
 }
 
-/* 🔹 Input Fields */
-mat-form-field {
-  width: 100%;
-}
-
-/* 🔹 Buttons */
 button {
-  width: 120px;
-  align-self: flex-end;
-  padding: 8px 12px;
-  font-weight: bold;
-  border-radius: 6px;
-  background: #6200ea;
-  color: white;
-  transition: background 0.3s ease;
+  margin: 1rem 0;
+  width: 200px;
 }
 
-button:hover {
-  background: #3700b3;
+mat-spinner {
+  margin: 1rem auto;
 }
 
-/* 🔹 Error Messages */
-mat-error {
-  font-size: 13px;
-  color: #d32f2f;
-  font-weight: bold;
-}
-
-/* 🔹 Loading Spinner */
-.spinner {
-  display: block;
-  margin: auto;
-  width: 50px;
-  height: 50px;
-}
-
-/* 🔹 File Input */
 input[type="file"] {
-  display: none;
+  visibility: hidden;
 }
 
-.file-upload-btn {
-  display: inline-block;
-  background: #03a9f4;
-  color: white;
-  padding: 10px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background 0.3s ease;
-}
-
-.file-upload-btn:hover {
-  background: #0288d1;
-}
-
-/* 🔹 Image Preview */
 .image-preview {
   height: 150px;
   margin: 16px 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px dashed #ccc;
+  border: 2px dashed #CCC;
   border-radius: 8px;
   background-color: #f4f4f4;
 }
@@ -90,14 +47,17 @@ input[type="file"] {
   border-radius: 6px;
 }
 
-/* 🔹 Responsive Design */
-@media (max-width: 600px) {
-  mat-card {
-    max-width: 90%;
-    padding: 20px;
-  }
-  
-  button {
-    width: 100%;
-  }
+.image-upload {
+  margin: 1rem 0;
+  width: 100%;
+  text-align: center;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-container {
+  width: 100%;
+  padding: 1rem;
 }

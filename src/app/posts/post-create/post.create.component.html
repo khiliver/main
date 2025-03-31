@@ -1,35 +1,52 @@
-<mat-spinner *ngIf="isLoading" class="spinner"></mat-spinner> <!-- ✅ Show spinner when saving -->
+<mat-card class="post-form">
+  <mat-spinner *ngIf="Loading"></mat-spinner>  
 
-<form [formGroup]="form" (ngSubmit)="onSavePost()" *ngIf="!isLoading">
-  <!-- Title Field -->
-  <mat-form-field appearance="outline">
-    <mat-label>Title</mat-label>
-    <input matInput type="text" formControlName="title" placeholder="Enter Title Here">
-    <mat-error *ngIf="form.get('title')?.invalid">This field is required</mat-error>
-  </mat-form-field>
+  <form [formGroup]="form" (submit)="onSavePost()" *ngIf="!Loading" class="form-container">    
+      <mat-form-field class="full-width">
+          <input 
+            matInput 
+            type="text" 
+            formControlName="title"
+            placeholder="Enter Title Here">
+          <mat-error *ngIf="form.get('title')?.invalid && form.get('title')?.touched">
+            Title is required and must be at least 3 characters.
+          </mat-error>
+      </mat-form-field>
 
-  <!-- Content Field -->
-  <mat-form-field appearance="outline">
-    <mat-label>Content</mat-label>
-    <textarea matInput rows="6" formControlName="content" placeholder="Enter Content Here"></textarea>
-    <mat-error *ngIf="form.get('content')?.invalid">This field is required</mat-error>
-  </mat-form-field>
+      <mat-form-field class="full-width">
+          <textarea 
+            rows="6" 
+            matInput 
+            formControlName="content"
+            placeholder="Post Content">
+          </textarea>
+          <mat-error *ngIf="form.get('content')?.invalid && form.get('content')?.touched">
+            Content is required and must be at least 3 characters.
+          </mat-error>
+      </mat-form-field>
 
-  <!-- Image Upload -->
-  <div class="image-upload">
-    <button mat-stroked-button type="button" (click)="filepicker.click()">
-      Pick Image
-    </button>
-    <input type="file" #filepicker (change)="onImagePicked($event)">
-  </div>
-
-  <!-- Image Preview -->
-  <div class="image-preview" *ngIf="imagePreview">
-    <img [src]="imagePreview" alt="Preview Image">
-  </div>
-
-  <!-- Submit Button -->
-  <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
-    {{ mode === 'edit' ? 'Update Post' : 'Create Post' }}
-  </button>
-</form>
+      <div class="image-upload">
+          <button 
+            mat-stroked-button 
+            type="button" 
+            (click)="filePicker.click()">
+            Pick Image
+          </button>
+          <input 
+            type="file" 
+            #filePicker 
+            (change)="onImagePicked($event)"
+            accept="image/*">
+          <div class="image-preview" *ngIf="imagePreview && imagePreview !== '' && form.get('image')?.valid">
+            <img [src]="imagePreview" alt="Form image preview">
+          </div>
+      </div>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        type="submit" 
+        [disabled]="form.invalid">
+        Save Post
+      </button>
+  </form>
+</mat-card>
