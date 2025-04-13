@@ -1,36 +1,32 @@
-import { Component, OnInit } from "@angular/core";
-import { AuthService } from "../authentication/auth.service";
-import { Subscription } from "rxjs";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/authentication/auth.service';
 
 @Component({
-    selector: 'app-header',
-    templateUrl: './header.component.html',
-    styleUrls: ['./header.component.css']
+  selector: 'app-header',
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.css']
 })
+export class HeaderComponent implements OnInit, OnDestroy {
+  userIsAuthenticated = false;
+  private authListenerSubs!: Subscription;
 
-export class HeaderComponent implements OnInit{
-onLogout() {
-throw new Error('Method not implemented.');
-}  
-    private authListenerSubs: Subscription | undefined;
-    public userIsAuthenticated = false;
+  constructor(public authService: AuthService) {}
 
-    constructor(private authService: AuthService){}  
-    
-    ngOnInit(){ 
-        this.authListenerSubs = this.authService.getAuthStatusListener().subscribe(isAuthenticated => {  
-            this.userIsAuthenticated = isAuthenticated;  
-        });
-    }  
+  ngOnInit() {
+    this.userIsAuthenticated = this.authService.getIsAuth();
+    this.authListenerSubs = this.authService
+      .getAuthStatusListener()
+      .subscribe(isAuthenticated => {
+        this.userIsAuthenticated = isAuthenticated;
+      });
+  }
 
-    ngOnDestroy(){
-        if (this.authListenerSubs) {
-            this.authListenerSubs.unsubscribe();
-        }
-  
-    }
-  }   
+  onLogout() {
+    this.authService.logout();
+  }
 
-function subscribe(arg0: (isAuthenticated: any) => void) {
-    throw new Error("Function not implemented.");
+  ngOnDestroy() {
+    this.authListenerSubs.unsubscribe();
+  }
 }

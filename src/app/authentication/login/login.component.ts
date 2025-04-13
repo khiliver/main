@@ -32,6 +32,7 @@ export class LoginComponent {
 
     const { email, password } = this.loginForm.value;
 
+    // Call the AuthService loginUser method
     this.authService.loginUser(email, password).subscribe({
       next: (response: { token: string }) => {
         this.isLoading = false;
@@ -40,12 +41,12 @@ export class LoginComponent {
         // Store token in localStorage
         localStorage.setItem('token', response.token);
 
-        // Example: Navigate to a protected route after successful login
+        // Navigate to a protected route after successful login
         // this.router.navigate(['/dashboard']);
       },
-      error: (error) => {
+      error: (error: any) => {
         this.isLoading = false;
-        this.errorMessage = error.error?.message || 'Login failed';
+        this.errorMessage = error?.error?.message || 'Login failed';
         console.error('Login error:', error);
       }
     });

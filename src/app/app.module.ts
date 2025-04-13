@@ -54,8 +54,11 @@ import { AuthService } from './authentication/auth.service';
     MatPaginatorModule, 
 
   ],
-  providers: [{provide: HTTP_INTERCEPTORS,   
-    useClass:AuthInterceptor, multi: true}],
+  providers: [
+    {
+      provide: HTTP_INTERCEPTORS,   
+    useClass:AuthInterceptor,
+    multi: true}],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,56 +1,93 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { AuthData } from './auth-data.model';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';  // Import tap for side-effects
-import { Subject } from "rxjs";  // Import Subject
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private API_URL = 'http://localhost:3000/api/user';  // URL of the API
-  private token: string = '';  // Store token in the service
-  private authStatusListener = new Subject<boolean>();  // Subject to listen to auth status changes
+  private API_URL = 'http://localhost:3000/api/user';
+  private token: string = '';
+  private tokenTimer: any;
+  private isAuthenticated = false;
+  private authStatusListener = new Subject<boolean>();
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router) {}
 
-  // Method to create a user
   createUser(email: string, password: string): Observable<any> {
     const authData: AuthData = { email, password };
     return this.http.post(`${this.API_URL}/signup`, authData);
   }
 
-  // Method to login a user and store the token
-  loginUser(email: string, password: string): Observable<any> {
+  loginUser(email: string, password: string): Observable<{ token: string; expiresIn: number }> {
     const authData: AuthData = { email, password };
-    return this.http.post<{ token: string }>(`${this.API_URL}/login`, authData).pipe(
-      tap(response => {
-        // Save the token locally
-        this.token = response.token;
-        localStorage.setItem('token', response.token);  // Store the token in localStorage
-
-        // Notify the status listener that the user is authenticated
-        this.authStatusListener.next(true);  // Authentication status changed to true
-      })
-    );
+    return this.http.post<{ token: string; expiresIn: number }>(`${this.API_URL}/login`, authData);
   }
 
-  // Method to get the token from the service or localStorage
+  autoAuthUser(): void {
+    const authInformation = this.getAuthData();
+    if (!authInformation) {
+      return;
+    }
+
+    const now = new Date();
+    const isInFuture = authInformation.expirationDate > now;
+
+    if (isInFuture) {
+      this.token = authInformation.token;
+      this.isAuthenticated = true;
+      const expiresIn = authInformation.expirationDate.getTime() - now.getTime();
+      this.setAuthTimer(expiresIn / 1000);
+      this.authStatusListener.next(true);
+    } else {
+      this.logout();
+    }
+  }
+
+  logout(): void {
+    this.token = '';
+    this.isAuthenticated = false;
+    this.clearAuthData();
+    clearTimeout(this.tokenTimer);
+    this.authStatusListener.next(false);
+    this.router.navigate(['/login']);
+  }
+
   getToken(): string {
-    // Return the token from the service or localStorage
     return this.token || localStorage.getItem('token')!;
   }
 
-  // Method to log out the user
-  logout(): void {
-    this.token = '';  // Clear token from the service
-    localStorage.removeItem('token');  // Remove token from localStorage
-
-    // Notify the status listener that the user is logged out
-    this.authStatusListener.next(false);  // Authentication status changed to false
+  getIsAuth(): boolean {
+    return this.isAuthenticated;
   }
 
-  // Method to get the authentication status listener
   getAuthStatusListener(): Observable<boolean> {
-    return this.authStatusListener.asObservable();  // Return the status listener as observable
+    return this.authStatusListener.asObservable();
+  }
+
+  private saveAuthData(token: string, expirationDate: Date): void {
+    localStorage.setItem('token', token);
+    localStorage.setItem('expiration', expirationDate.toString());
+  }
+
+  private clearAuthData(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('expiration');
+  }
+
+  private getAuthData(): { token: string; expirationDate: Date } | null {
+    const token = localStorage.getItem('token');
+    const expirationDate = localStorage.getItem('expiration');
+    if (!token || !expirationDate) return null;
+    return {
+      token: token,
+      expirationDate: new Date(expirationDate)
+    };
+  }
+
+  private setAuthTimer(duration: number): void {
+    this.tokenTimer = setTimeout(() => {
+      this.logout();
+    }, duration * 1000);
   }
 }
