@@ -4,7 +4,6 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { PostsService } from '../posts.service';
 import { Post } from '../post.model';
 import { Router } from '@angular/router';
-import { mimetype } from './mime-type.validator';
 
 @Component({
   selector: 'app-post-create',

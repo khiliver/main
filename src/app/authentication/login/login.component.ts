@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +15,8 @@ export class LoginComponent {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -23,26 +25,23 @@ export class LoginComponent {
   }
 
   onLogin(): void {
-    if (this.loginForm.invalid) {
-      return;
-    }
+    if (this.loginForm.invalid) return;
 
     this.isLoading = true;
-    this.errorMessage = '';  // Reset the error message
+    this.errorMessage = '';
 
     const { email, password } = this.loginForm.value;
 
-    // Call the AuthService loginUser method
     this.authService.loginUser(email, password).subscribe({
       next: (response: { token: string }) => {
         this.isLoading = false;
         console.log('Login successful:', response);
 
-        // Store token in localStorage
+        // Store token
         localStorage.setItem('token', response.token);
 
-        // Navigate to a protected route after successful login
-        // this.router.navigate(['/dashboard']);
+        // ✅ Redirect to the post creation page (PostCreateComponent)
+        this.router.navigate(['/create']);
       },
       error: (error: any) => {
         this.isLoading = false;

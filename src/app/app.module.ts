@@ -13,18 +13,16 @@ import { PostsService } from './posts/posts.service';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { MatExpansionModule} from '@angular/material/expansion';
-import { MatToolbarModule} from '@angular/material/toolbar';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';  
+import { MatPaginatorModule } from '@angular/material/paginator';  
 import { LoginComponent } from './authentication/login/login.component';
 import { SignupComponent } from './authentication/signup/signup.component';
 import { AuthInterceptor } from './authentication/auth-interceptor';
 import { AuthService } from './authentication/auth.service';
-
-
 
 @NgModule({
   declarations: [
@@ -41,9 +39,7 @@ import { AuthService } from './authentication/auth.service';
     AppRoutingModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    AppRoutingModule,
     ReactiveFormsModule,
-    
     MatExpansionModule,
     MatButtonModule,
     MatInputModule,
@@ -51,14 +47,15 @@ import { AuthService } from './authentication/auth.service';
     MatIconModule,
     MatCardModule,
     MatProgressSpinnerModule,
-    MatPaginatorModule, 
-
+    MatPaginatorModule,
   ],
   providers: [
     {
-      provide: HTTP_INTERCEPTORS,   
-    useClass:AuthInterceptor,
-    multi: true}],
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
